@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WaterController;
 
 Route::resource('waters', WaterController::class);
+Route::get('/waters', [WaterController::class, 'index'])->name('waters.index');
+
+Route::get('/waters/export/pdf', [WaterController::class, 'exportPdf'])->name('waters.export.pdf');
 
 Route::get('/', function () {
     return view('welcome');

@@ -19,6 +19,24 @@
         </a>
     </div>
 
+    <!-- Search Form -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-6">
+            <form action="{{ route('waters.index') }}" method="GET" class="d-flex">
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    class="form-control me-2"
+                    placeholder="🔍 Search pump name, usage, or health check"
+                >
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Centered Table -->
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -30,6 +48,7 @@
                             <th>Pump Name</th>
                             <th>Total Water Used (L)</th>
                             <th>Last Maintenance</th>
+                            <th>Health Check</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -40,6 +59,7 @@
                                 <td>{{ $water->pump_name }}</td>
                                 <td class="text-center">{{ $water->total_water_used }}</td>
                                 <td class="text-center">{{ \Carbon\Carbon::parse($water->last_maintenance)->format('Y-m-d') }}</td>
+                                <td class="text-center">{{ $water->health_check }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('waters.show', $water->id) }}" class="btn btn-sm btn-info me-2">
                                         👁️ Show
@@ -60,12 +80,19 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted">No water records found.</td>
+                                <td colspan="6" class="text-center text-muted">No water records found.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            <div class="text-center mt-3 mb-3">
+                <a href="{{ route('waters.export.pdf') }}" class="btn btn-outline-danger">
+                    🧾 Export PDF
+                </a>
+            </div>
+
 
             <!-- Pagination -->
             <div class="d-flex justify-content-center mt-4">

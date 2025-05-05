@@ -4,17 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Water;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class WaterController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $waters = Water::orderBy('id', 'desc')->paginate(10);
-        return view('waters.index', compact('waters'));
+        $search = $request->input('search');
+
+        $waters = Water::when($search, function ($query, $search) {
+            $search = strtolower($search);
+
+            if ($search === 'a' || $search === 'b') {
+                return $query->where('pump_name', strtoupper($search));
+            }
+
+            return $query->where('pump_name', 'like', "%{$search}%")
+                        ->orWhere('health_check', 'like', "%{$search}%")
+                        ->orWhere('total_water_used', 'like', "%{$search}%");
+        })
+        ->orderBy('id', 'desc')
+        ->paginate(10)
+        ->appends(['search' => $search]); // preserves search term in pagination links
+
+        return view('waters.index', compact('waters', 'search'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -81,5 +99,15 @@ class WaterController extends Controller
     {
         $water->delete();
         return redirect()->route('waters.index');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $waters = Water::orderBy('id', 'desc')->get();
+
+        $pdf = Pdf::loadView('waters.pdf', compact('waters'))
+                ->setPaper('a4', 'landscape');
+
+        return $pdf->download('water-records.pdf');
     }
 }
