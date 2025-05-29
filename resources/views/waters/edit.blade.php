@@ -14,11 +14,6 @@
         </div>
 
         <div class="mb-3">
-            <label for="total_water_used" class="form-label">Total Water Used (L)</label>
-            <input type="number" step="0.01" name="total_water_used" class="form-control" value="{{ $water->total_water_used ?? old('total_water_used') }}" required>
-        </div>
-
-        <div class="mb-3">
             <label for="last_maintenance" class="form-label">Last Maintenance</label>
             <input type="date" name="last_maintenance" class="form-control" value="{{ $water->last_maintenance ?? old('last_maintenance') }}" required>
         </div>

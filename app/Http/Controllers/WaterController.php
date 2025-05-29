@@ -23,8 +23,7 @@ class WaterController extends Controller
             }
 
             return $query->where('pump_name', 'like', "%{$search}%")
-                        ->orWhere('health_check', 'like', "%{$search}%")
-                        ->orWhere('total_water_used', 'like', "%{$search}%");
+                        ->orWhere('health_check', 'like', "%{$search}%");
         })
         ->orderBy('id', 'desc')
         ->paginate(10)
@@ -49,7 +48,6 @@ class WaterController extends Controller
     {
         $request->validate([
             'pump_name' => 'required|string|max:255',
-            'total_water_used' => 'required|numeric',
             'last_maintenance' => 'required|date',
             'health_check' => 'required|in:Normal,Warning',
         ]);
@@ -72,7 +70,7 @@ class WaterController extends Controller
      */
     public function edit(Water $water)
     {
-        return view('waters.edit', compact('water'));
+        return view('waters.edit', data: compact('water'));
     }
 
     /**
@@ -82,7 +80,6 @@ class WaterController extends Controller
     {
         $request->validate([
             'pump_name' => 'required|string|max:255',
-            'total_water_used' => 'required|numeric',
             'last_maintenance' => 'required|date',
             'health_check' => 'required|in:Normal,Warning',
         ]);

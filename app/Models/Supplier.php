@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Water extends Model
+class Supplier extends Model
 {
     use HasFactory;
-    protected $fillable = ['pump_name', 'last_maintenance', 'health_check'];
+    protected $fillable = ['name', 'email', 'contact_number'];
 
     public function transactions()
     {

@@ -8,9 +8,6 @@
             <dt class="col-sm-4">Pump Name</dt>
             <dd class="col-sm-8">{{ $water->pump_name }}</dd>
 
-            <dt class="col-sm-4">Total Water Used</dt>
-            <dd class="col-sm-8">{{ $water->total_water_used }} Liters</dd>
-
             <dt class="col-sm-4">Last Maintenance</dt>
             <dd class="col-sm-8">{{ \Carbon\Carbon::parse($water->last_maintenance)->format('F d, Y') }}</dd>
 

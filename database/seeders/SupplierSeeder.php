@@ -5,14 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class WaterSeeder extends Seeder
+class SupplierSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        // Generate 10 records of fake water data
-        \App\Models\Water::factory(10)->create();
+        // Generate 10 records of fake supplier data
+        \App\Models\Supplier::factory()->count(10)->create();
     }
 }

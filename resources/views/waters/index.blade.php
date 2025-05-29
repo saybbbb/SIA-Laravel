@@ -46,7 +46,6 @@
                         <tr>
                             <th>ID</th>
                             <th>Pump Name</th>
-                            <th>Total Water Used (L)</th>
                             <th>Last Maintenance</th>
                             <th>Health Check</th>
                             <th>Actions</th>
@@ -57,7 +56,6 @@
                             <tr>
                                 <td class="text-center">{{ $water->id }}</td>
                                 <td>{{ $water->pump_name }}</td>
-                                <td class="text-center">{{ $water->total_water_used }}</td>
                                 <td class="text-center">{{ \Carbon\Carbon::parse($water->last_maintenance)->format('Y-m-d') }}</td>
                                 <td class="text-center">{{ $water->health_check }}</td>
                                 <td class="text-center">

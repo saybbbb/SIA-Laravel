@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Water Records PDF</title>
+    <title>Supplier Records PDF</title>
     <style>
         body { font-family: sans-serif; font-size: 12px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -10,23 +10,23 @@
     </style>
 </head>
 <body>
-    <h2>Water Records Report</h2>
+    <h2>Supplier Records Report</h2>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Pump Name</th>
-                <th>Last Maintenance</th>
-                <th>Health Check</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact Number</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($waters as $water)
+            @foreach($suppliers as $supplier)
                 <tr>
-                    <td>{{ $water->id }}</td>
-                    <td>{{ $water->pump_name }}</td>
-                    <td>{{ \Carbon\Carbon::parse($water->last_maintenance)->format('Y-m-d') }}</td>
-                    <td>{{ $water->health_check }}</td>
+                    <td>{{ $supplier->id }}</td>
+                    <td>{{ $supplier->name }}</td>
+                    <td>{{ $supplier->email ?? '-' }}</td>
+                    <td>{{ $supplier->contact_number ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::dropIfExists('waters');
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::create('waters', function (Blueprint $table) {
+            $table->id();
+            $table->string('pump_name');
+            $table->float('total_water_used'); // Can adjust to your preferred precision.
+            $table->date('last_maintenance');
+            $table->enum('health_check', ['Normal', 'Warning',]);
+            $table->timestamps();
+            });
+    }
+};
