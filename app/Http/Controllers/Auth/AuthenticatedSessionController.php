@@ -24,8 +24,28 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Attempt login via your existing authenticate() method
         $request->authenticate();
 
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Check if user is approved
+        if ($user->status !== 'approved') {
+            // Logout immediately
+            Auth::logout();
+
+            // Invalidate the session
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            // Throw validation exception with message
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Your account is pending approval by an administrator.',
+            ]);
+        }
+
+        // If approved, regenerate session and continue normally
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));

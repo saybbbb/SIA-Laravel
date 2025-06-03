@@ -17,6 +17,15 @@
                     </x-nav-link>
 
                     @if(auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('admin.staff.pending')" :active="request()->routeIs('admin.staff.pending')">
+                            {{ __('Pending Staff Approvals') }}
+                            @if(isset($pendingCount) && $pendingCount > 0)
+                                <span class="ml-1 inline-block rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
+                                    {{ $pendingCount }}
+                                </span>
+                            @endif
+                        </x-nav-link>
+
                         <x-nav-link :href="route('waters.index')" :active="request()->routeIs('waters.index')">
                             {{ __('Water') }}
                         </x-nav-link>
@@ -29,7 +38,7 @@
                     <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index')">
                         {{ __('Transaction') }}
                     </x-nav-link>
-                </div>  
+                </div>
             </div>
 
             <!-- Settings Dropdown -->

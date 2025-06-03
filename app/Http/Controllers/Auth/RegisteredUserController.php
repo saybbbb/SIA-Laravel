@@ -39,12 +39,16 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'staff',           // assign role staff by default
+            'status' => 'pending',       // default status pending
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Remove this line
+        //Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect to a "pending approval" page or back with a message
+        return redirect()->route('login')->with('status', 'Your account is pending approval by an administrator. You will be notified once approved.');
     }
 }
