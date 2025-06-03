@@ -58,7 +58,7 @@
                                     </td>
                                     <td class="text-center">{{ $transaction->total_water_used }}</td>
 
-                                    @if(auth()->user()->role === 'admin' || $transaction->user_id === auth()->id())
+                                    @if(auth()->user()->role === 'admin')
                                         <td class="text-center">
                                             <a href="{{ route('transactions.edit', $transaction->id) }}"
                                                 class="btn btn-sm btn-warning me-1">✏️ Edit</a>
