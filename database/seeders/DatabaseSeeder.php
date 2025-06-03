@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => Hash::make('password'), // use a strong password!
             'role' => 'admin',
+            'status' => 'approved',  // admin should be approved by default
         ]);
 
         // Seed Staff user
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'staff@example.com',
             'password' => Hash::make('password'),
             'role' => 'staff',
+            'status' => 'pending',  // you can also seed as approved or pending for test
         ]);
     }
 }

@@ -9,6 +9,8 @@ use App\Models\Water;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Http\Controllers\StatisticsExportController;
+use App\Http\Controllers\AdminStaffController;
+use App\Models\User;
 
 Route::resource('suppliers', SupplierController::class);
 Route::resource('waters', WaterController::class);
@@ -40,12 +42,16 @@ Route::get('/dashboard', function () {
                                 ->with('supplier')
                                 ->get();
 
+    $pendingCount = User::where('role', 'staff')->where('status', 'pending')->count();
+
     return view('dashboard', compact(
         'totalWaters',
         'totalSuppliers',
         'totalTransactions',
         'waterUsage',
-        'supplierUsage'
+        'supplierUsage',
+        'pendingCount'  // pass pendingCount to view
+
     ));
 })->middleware(['auth'])->name('dashboard');
 
@@ -58,5 +64,11 @@ Route::middleware('auth')->group(function () {
 Route::get('/export-statistics-pdf', [StatisticsExportController::class, 'exportPDF'])
     ->middleware(['auth'])
     ->name('export.statistics.pdf');
+
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('staff/pending', [AdminStaffController::class, 'pending'])->name('admin.staff.pending');
+    Route::patch('staff/{id}/approve', [AdminStaffController::class, 'approve'])->name('admin.staff.approve');
+    Route::patch('staff/{id}/reject', [AdminStaffController::class, 'reject'])->name('admin.staff.reject');
+});
 
 require __DIR__.'/auth.php';
