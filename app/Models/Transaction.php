@@ -10,6 +10,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'water_id',
         'supplier_id',
         'transaction_date',

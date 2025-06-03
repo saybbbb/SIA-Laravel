@@ -17,7 +17,7 @@ class WaterFactory extends Factory
     public function definition(): array
     {
         return [
-            'pump_name' => $this->faker->randomElement(['A', 'B']),
+            'pump_name' => 'Pump ' . $this->faker->unique()->numerify('###'),
             'last_maintenance' => $this->faker->date(),
             'health_check' => $this->faker->randomElement(['Normal', 'Warning']),
         ];

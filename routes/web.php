@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WaterController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
+use App\Models\Water;
+use App\Models\Supplier;
+use App\Models\Transaction;
+use App\Http\Controllers\StatisticsExportController;
 
 Route::resource('suppliers', SupplierController::class);
 Route::resource('waters', WaterController::class);
@@ -22,13 +26,37 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    $totalWaters = Water::count();
+    $totalSuppliers = Supplier::count();
+    $totalTransactions = Transaction::count();
+
+    $waterUsage = Transaction::select('water_id', \DB::raw('SUM(total_water_used) as total'))
+                              ->groupBy('water_id')
+                              ->with('water')
+                              ->get();
+
+    $supplierUsage = Transaction::select('supplier_id', \DB::raw('SUM(total_water_used) as total'))
+                                ->groupBy('supplier_id')
+                                ->with('supplier')
+                                ->get();
+
+    return view('dashboard', compact(
+        'totalWaters',
+        'totalSuppliers',
+        'totalTransactions',
+        'waterUsage',
+        'supplierUsage'
+    ));
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/export-statistics-pdf', [StatisticsExportController::class, 'exportPDF'])
+    ->middleware(['auth'])
+    ->name('export.statistics.pdf');
 
 require __DIR__.'/auth.php';
