@@ -18,16 +18,15 @@ class WaterController extends Controller
         $waters = Water::when($search, function ($query, $search) {
             $search = strtolower($search);
 
-            if ($search === 'a' || $search === 'b') {
-                return $query->where('pump_name', strtoupper($search));
-            }
-
-            return $query->where('pump_name', 'like', "%{$search}%")
-                        ->orWhere('health_check', 'like', "%{$search}%");
+            return $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(pump_name) like ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(health_check) like ?', ["%{$search}%"]);
+            });
         })
-        ->orderBy('id', 'desc')
-        ->paginate(10)
-        ->appends(['search' => $search]); // preserves search term in pagination links
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->appends(['search' => $search]); // preserves search term in pagination links
+
 
         return view('waters.index', compact('waters', 'search'));
     }
@@ -103,7 +102,7 @@ class WaterController extends Controller
         $waters = Water::orderBy('id', 'desc')->get();
 
         $pdf = Pdf::loadView('waters.pdf', compact('waters'))
-                ->setPaper('a4', 'landscape');
+            ->setPaper('a4', 'landscape');
 
         return $pdf->download('water-records.pdf');
     }
