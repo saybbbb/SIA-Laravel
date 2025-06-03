@@ -13,6 +13,10 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $search = $request->input('search');
 
         $suppliers = Supplier::when($search, function ($query, $search) {
@@ -24,7 +28,7 @@ class SupplierController extends Controller
         })
             ->orderBy('id', 'desc')
             ->paginate(10)
-            ->appends(['search' => $search]); // keep search term in pagination
+            ->appends(['search' => $search]);
 
         return view('suppliers.index', compact('suppliers', 'search'));
     }
@@ -34,6 +38,10 @@ class SupplierController extends Controller
      */
     public function create()
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         return view('suppliers.create');
     }
 
@@ -42,6 +50,10 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email',
@@ -58,8 +70,11 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
-        return view('suppliers.show', compact('supplier'));
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
 
+        return view('suppliers.show', compact('supplier'));
     }
 
     /**
@@ -67,6 +82,10 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         return view('suppliers.edit', compact('supplier'));
     }
 
@@ -75,6 +94,10 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email',
@@ -91,12 +114,20 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $supplier->delete();
         return redirect()->route('suppliers.index');
     }
 
     public function exportPdf(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $suppliers = Supplier::orderBy('id', 'desc')->get();
 
         $pdf = Pdf::loadView('suppliers.pdf', compact('suppliers'))

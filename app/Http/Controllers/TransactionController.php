@@ -18,6 +18,9 @@ class TransactionController extends Controller
         $search = $request->input('search');
 
         $transactions = Transaction::with(['water', 'supplier'])
+            ->when(auth()->user()->role !== 'admin', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
             ->when($search, function ($query, $search) {
                 $query->whereHas('water', function ($q) use ($search) {
                     $q->where('pump_name', 'like', "%$search%");
@@ -54,25 +57,47 @@ class TransactionController extends Controller
             'total_water_used' => 'required|numeric|min:0',
         ]);
 
+        // Assign to the currently logged-in user
+        $validated['user_id'] = auth()->id();
+
         Transaction::create($validated);
 
-        return redirect()->route('transactions.index');
+        return redirect()->route('transactions.index')->with('success', 'Transaction saved.');
     }
 
     /**
-     * Display the specified resource.
+     * Export PDF for transactions.
      */
-    public function show(Transaction $transaction)
+    public function exportPdf()
     {
-        //
+        $transactions = Transaction::with(['water', 'supplier'])
+            ->when(auth()->user()->role !== 'admin', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('transactions.pdf', compact('transactions'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('transaction-records.pdf');
     }
+
+    // You can also include role protection in edit/update/delete if needed
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Transaction $transaction)
     {
-        //
+        if (auth()->user()->role !== 'admin' && $transaction->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $waters = Water::all();
+        $suppliers = Supplier::all();
+
+        return view('transactions.edit', compact('transaction', 'waters', 'suppliers'));
     }
 
     /**
@@ -80,7 +105,20 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        //
+        if (auth()->user()->role !== 'admin' && $transaction->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'water_id' => 'required|exists:waters,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'transaction_date' => 'required|date',
+            'total_water_used' => 'required|numeric|min:0',
+        ]);
+
+        $transaction->update($validated);
+
+        return redirect()->route('transactions.index')->with('success', 'Transaction updated.');
     }
 
     /**
@@ -88,16 +126,12 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
-        //
-    }
+        if (auth()->user()->role !== 'admin' && $transaction->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
 
-    public function exportPdf()
-    {
-        $transactions = Transaction::with(['water', 'supplier'])->orderBy('id', 'desc')->get();
+        $transaction->delete();
 
-        $pdf = Pdf::loadView('transactions.pdf', compact('transactions'))
-            ->setPaper('a4', 'landscape');
-
-        return $pdf->download('transaction-records.pdf');
+        return redirect()->route('transactions.index')->with('success', 'Transaction deleted.');
     }
 }

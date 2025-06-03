@@ -13,6 +13,10 @@ class WaterController extends Controller
      */
     public function index(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $search = $request->input('search');
 
         $waters = Water::when($search, function ($query, $search) {
@@ -25,18 +29,20 @@ class WaterController extends Controller
         })
             ->orderBy('id', 'desc')
             ->paginate(10)
-            ->appends(['search' => $search]); // preserves search term in pagination links
-
+            ->appends(['search' => $search]);
 
         return view('waters.index', compact('waters', 'search'));
     }
-
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         return view('waters.create');
     }
 
@@ -45,6 +51,10 @@ class WaterController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'pump_name' => 'required|string|max:255',
             'last_maintenance' => 'required|date',
@@ -61,6 +71,10 @@ class WaterController extends Controller
      */
     public function show(Water $water)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         return view('waters.show', compact('water'));
     }
 
@@ -69,7 +83,11 @@ class WaterController extends Controller
      */
     public function edit(Water $water)
     {
-        return view('waters.edit', data: compact('water'));
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
+        return view('waters.edit', compact('water'));
     }
 
     /**
@@ -77,6 +95,10 @@ class WaterController extends Controller
      */
     public function update(Request $request, Water $water)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $request->validate([
             'pump_name' => 'required|string|max:255',
             'last_maintenance' => 'required|date',
@@ -93,12 +115,20 @@ class WaterController extends Controller
      */
     public function destroy(Water $water)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $water->delete();
         return redirect()->route('waters.index');
     }
 
     public function exportPdf(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $waters = Water::orderBy('id', 'desc')->get();
 
         $pdf = Pdf::loadView('waters.pdf', compact('waters'))
