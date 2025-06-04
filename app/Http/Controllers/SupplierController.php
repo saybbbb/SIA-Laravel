@@ -130,7 +130,10 @@ class SupplierController extends Controller
 
         $suppliers = Supplier::orderBy('id', 'desc')->get();
 
-        $pdf = Pdf::loadView('suppliers.pdf', compact('suppliers'))
+        // Pass the logged-in user as 'account'
+        $account = auth()->user();
+
+        $pdf = Pdf::loadView('suppliers.pdf', compact('suppliers', 'account'))
                 ->setPaper('a4', 'landscape');
 
         return $pdf->download('supplier-records.pdf');

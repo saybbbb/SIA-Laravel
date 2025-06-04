@@ -12,21 +12,24 @@ class StatisticsExportController extends Controller
 {
     public function exportPDF()
     {
+        $account = auth()->user();  // Get logged-in user
+
         $totalWaters = Water::count();
         $totalSuppliers = Supplier::count();
         $totalTransactions = Transaction::count();
 
         $waterUsage = Transaction::select('water_id', \DB::raw('SUM(total_water_used) as total'))
-                                  ->groupBy('water_id')
-                                  ->with('water')
-                                  ->get();
+            ->groupBy('water_id')
+            ->with('water')
+            ->get();
 
         $supplierUsage = Transaction::select('supplier_id', \DB::raw('SUM(total_water_used) as total'))
-                                    ->groupBy('supplier_id')
-                                    ->with('supplier')
-                                    ->get();
+            ->groupBy('supplier_id')
+            ->with('supplier')
+            ->get();
 
         $pdf = PDF::loadView('statistics-pdf', compact(
+            'account',            // add this
             'totalWaters',
             'totalSuppliers',
             'totalTransactions',
@@ -36,5 +39,6 @@ class StatisticsExportController extends Controller
 
         return $pdf->download('statistics.pdf');
     }
+
 }
 
