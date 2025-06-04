@@ -22,8 +22,8 @@ class AdminStaffController extends Controller
         $this->authorizeAdmin();
 
         $pendingStaff = User::where('role', 'staff')
-                            ->where('status', 'pending')
-                            ->get();
+            ->where('status', 'pending')
+            ->get();
 
         return view('admin.staff.pending', compact('pendingStaff'));
     }
@@ -46,9 +46,9 @@ class AdminStaffController extends Controller
         $this->authorizeAdmin();
 
         $user = User::findOrFail($id);
-        $user->status = 'rejected';
-        $user->save();
+        $user->delete();  // Delete user instead of updating status
 
-        return redirect()->back()->with('success', 'Staff rejected successfully.');
+        return redirect()->back()->with('success', 'Staff rejected and deleted successfully.');
     }
+
 }

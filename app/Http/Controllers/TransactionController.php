@@ -77,7 +77,9 @@ class TransactionController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $pdf = Pdf::loadView('transactions.pdf', compact('transactions'))
+        $account = auth()->user();  // current logged-in user info
+
+        $pdf = Pdf::loadView('transactions.pdf', compact('transactions', 'account'))
             ->setPaper('a4', 'landscape');
 
         return $pdf->download('transaction-records.pdf');

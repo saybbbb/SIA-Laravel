@@ -131,7 +131,10 @@ class WaterController extends Controller
 
         $waters = Water::orderBy('id', 'desc')->get();
 
-        $pdf = Pdf::loadView('waters.pdf', compact('waters'))
+        // Pass the logged-in user as 'account'
+        $account = auth()->user();
+
+        $pdf = Pdf::loadView('waters.pdf', compact('waters', 'account'))
             ->setPaper('a4', 'landscape');
 
         return $pdf->download('water-records.pdf');
